@@ -13,34 +13,33 @@ export default function Home({ navigation }) {
             pickupCoords: {
                 latitude: 39.9359739,
                 longitude: 32.8477795,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
             },
             dropLocationCoords: {
                 latitude: 39.97100310,
                 longitude: 33.11711860,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
             }
         }
     )
-    const updateState = (data) => setState((state) => ({ ...state, ...data }));
-
 
     const mapRef = useRef()
     const { pickupCoords, dropLocationCoords } = state
-    const onPressLocation = () => {
-        navigation.navigate('ChooseLocation', { getCoordinates: fetchValue })
-    }
 
     const fetchValue = (data) => {
-        console.log("this is data", data)
-        updateState({
-            destinationCords: {
-                latitude: data.destinationCords.latitude,
-                longitude: data.destinationCords.longitude,
+        setState({
+            pickupCoords: {
+                latitude: data.pickupCoords.latitude,
+                longitude: data.pickupCoords.longitude
+            },
+            dropLocationCoords: {
+                latitude: data.dropLocationCoords.latitude,
+                longitude: data.dropLocationCoords.longitude
             }
         })
+        console.log("Data: ", data)
+    }
+
+    const onPressLocation = () => {
+        navigation.navigate('ChooseLocation', { getCoordinates: fetchValue })
     }
 
     return (
@@ -85,12 +84,7 @@ export default function Home({ navigation }) {
                 <TouchableOpacity
                     style={styles.inputStyle}
                     onPress={onPressLocation}>
-                    <Text>Choose your location</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.inputStyle}
-                    onPress={onPressLocation}>
-                    <Text>Choose your destination</Text>
+                    <Text>Choose location</Text>
                 </TouchableOpacity>
             </View>
         </View >

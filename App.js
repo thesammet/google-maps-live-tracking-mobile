@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import FlashMessage from "react-native-flash-message";
 
 //Screens
 import ChooseLocation from './src/screens/ChooseLocation';
@@ -16,6 +17,7 @@ const App = () => {
                 <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="ChooseLocation" component={ChooseLocation} />
             </Stack.Navigator>
+            <FlashMessage position="top" />
         </NavigationContainer>
     );
 };

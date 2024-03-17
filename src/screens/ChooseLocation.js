@@ -1,49 +1,67 @@
 //import libraries
 import { useNavigation } from '@react-navigation/native';
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 //reusable components
 import AddressPickup from '../components/AddressPickup';
 import CustomBtn from '../components/CustomBtn';
+import { showError, showSuccess } from '../utils/helperFunction';
 
 const ChooseLocation = (props) => {
     const navigation = useNavigation()
 
     const [state, setState] = useState({
-        destinationCoords: {}
+        pickupCoords: {},
+        dropLocationCoords: {}
     })
 
-    const { destinationCoords } = state
-
+    const { pickupCoords, dropLocationCoords } = state
     const checkValid = () => {
-        if (Object.keys(destinationCoords).length === 0) {
-            console.log('Please enter your destination location')
-            return false
+        if (Object.keys(pickupCoords).length === 0) {
+            showError('Please enter your pickup location!')
+            return false;
         }
-        return true
+        if (Object.keys(dropLocationCoords).length === 0) {
+            showError('Please enter your drop location!')
+            return false;
+        }
+        showSuccess("Successfully directed!")
+        return true;
     }
 
     const onDone = () => {
         const isValid = checkValid()
         if (isValid) {
-            props.route.params.getCordinates({
-                destinationCoords
+            props.route.params.getCoordinates({
+                pickupCoords,
+                dropLocationCoords
             })
             navigation.goBack()
         }
     }
-    const fetchDestinationCoords = (lat, lng, zipCode, cityText) => {
-        console.log("zip code==>>>", zipCode)
-        console.log('city texts', cityText)
+
+    const fetchAddressCoords = (lat, lng) => {
         setState({
             ...state,
-            destinationCords: {
+            pickupCoords: {
                 latitude: lat,
                 longitude: lng
             }
         })
     }
+
+    const fetchDestinationCoords = (lat, lng) => {
+        setState({
+            ...state,
+            dropLocationCoords: {
+                latitude: lat,
+                longitude: lng
+            }
+        })
+    }
+
+    console.log(JSON.stringify(props))
 
     return (
         <View style={styles.container}>
@@ -52,6 +70,10 @@ const ChooseLocation = (props) => {
                 style={{ backgroundColor: 'white', flex: 1, padding: 24 }}
             >
                 <View style={{ marginBottom: 16 }} />
+                <AddressPickup
+                    placheholderText="Enter Destination Location"
+                    fetchAddress={fetchAddressCoords}
+                />
                 <AddressPickup
                     placheholderText="Enter Destination Location"
                     fetchAddress={fetchDestinationCoords}
