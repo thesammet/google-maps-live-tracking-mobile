@@ -30,12 +30,14 @@ export default function Home({ navigation }) {
                 longitude: 32.715296,
                 latitudeDelta: LATITUDE_DELTA,
                 longitudeDelta: LONGITUDE_DELTA
-            })
-
+            }),
+            time: 0,
+            distance: 0
         }
     )
 
-    const { curLoc, dropLocationCoords, isLoading, coordinate } = state
+    const { curLoc, time, distance, dropLocationCoords, isLoading, coordinate } = state
+    const updateState = (data) => setState((state) => ({ ...state, ...data }));
 
     const getLiveLocation = async () => {
         const locPermissionDenied = await locationPermission()
@@ -100,8 +102,20 @@ export default function Home({ navigation }) {
         navigation.navigate('ChooseLocation', { getCoordinates: fetchValue })
     }
 
+    const fetchTime = (d, t) => {
+        updateState({
+            time: t,
+            distance: d
+        })
+    }
+
     return (
         <View style={styles.container}>
+            {distance !== 0 && time !== 0 &&
+                (<View style={{ alignItems: 'center', marginVertical: 16 }}>
+                    <Text>Time left: {time.toFixed(0)} </Text>
+                    <Text>Distance left: {distance.toFixed(0)}</Text>
+                </View>)}
             <View style={{ flex: 1 }}>
                 <MapView
                     ref={mapRef}
@@ -130,14 +144,17 @@ export default function Home({ navigation }) {
                             strokeColor={"cyan"}
                             optimizeWaypoints={true}
                             onReady={result => {
+                                console.log(`Distance: ${result.distance} km`)
+                                console.log(`Duration: ${result.duration} min.`)
+                                fetchTime(result.distance, result.duration);
                                 mapRef.current.fitToCoordinates(result.coordinates, {
                                     edgePadding: {
-                                        right: (width / 20),
-                                        bottom: (height / 20),
-                                        left: (width / 20),
-                                        top: (height / 20),
-                                    }
-                                })
+                                        // right: 30,
+                                        // bottom: 300,
+                                        // left: 30,
+                                        // top: 100,
+                                    },
+                                });
                             }}
                             onError={(errorMessage) => {
                                 console.log("Got an error: " + errorMessage)
