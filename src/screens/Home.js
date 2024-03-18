@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Dimensions, Text, TouchableOpacity, Image } from 'react-native'
 import MapView, { Marker, AnimatedRegion } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import imagePath from '../constants/imagePath';
@@ -14,15 +14,34 @@ const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 export default function Home({ navigation }) {
-    useEffect(() => {
-        getLiveLocation()
-    }, [])
+    const mapRef = useRef()
+    const markerRef = useRef()
+    const [state, setState] = useState(
+        {
+            curLoc: {
+                latitude: 39.978489,
+                longitude: 32.715296,
+            },
+            dropLocationCoords: {
+            },
+            isLoading: false,
+            coordinate: new AnimatedRegion({
+                latitude: 39.978489,
+                longitude: 32.715296,
+                latitudeDelta: LATITUDE_DELTA,
+                longitudeDelta: LONGITUDE_DELTA
+            })
+
+        }
+    )
+
+    const { curLoc, dropLocationCoords, isLoading, coordinate } = state
 
     const getLiveLocation = async () => {
         const locPermissionDenied = await locationPermission()
         if (locPermissionDenied) {
             const { latitude, longitude, heading } = await getCurrentLocation()
-            console.log("get live location after 4 second", heading)
+            console.log("get live location after 6 second", heading)
             animate(latitude, longitude);
             updateState({
                 heading: heading,
@@ -44,20 +63,7 @@ export default function Home({ navigation }) {
         return () => clearInterval(interval)
     }, [])
 
-    const [state, setState] = useState(
-        {
-            curLoc: {
-                latitude: 39.9359739,
-                longitude: 32.8477795,
-            },
-            dropLocationCoords: {
-            },
-            isLoading: false,
-        }
-    )
 
-    const mapRef = useRef()
-    const { curLoc, dropLocationCoords, isLoading } = state
 
     const fetchValue = (data) => {
         setState({
@@ -81,6 +87,15 @@ export default function Home({ navigation }) {
         }
     }
 
+    const onCenter = () => {
+        mapRef.current.animateToRegion({
+            latitude: curLoc.latitude,
+            longitude: curLoc.longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA
+        })
+    }
+
     const onPressLocation = () => {
         navigation.navigate('ChooseLocation', { getCoordinates: fetchValue })
     }
@@ -97,8 +112,9 @@ export default function Home({ navigation }) {
                         longitudeDelta: LONGITUDE_DELTA
                     }}
                 >
-                    <Marker
-                        coordinate={curLoc}
+                    <Marker.Animated
+                        ref={markerRef}
+                        coordinate={coordinate}
                         image={imagePath.icCurLoc} />
                     {Object.keys(dropLocationCoords).length > 0 && (
                         <Marker
@@ -128,6 +144,16 @@ export default function Home({ navigation }) {
                             }}
                         />}
                 </MapView>
+                <TouchableOpacity
+                    style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        right: 0
+                    }}
+                    onPress={onCenter}
+                >
+                    <Image source={imagePath.greenIndicator} />
+                </TouchableOpacity>
             </View>
             <View style={styles.bottomCard}>
                 <Text>Find your path</Text>
