@@ -12,16 +12,12 @@ const ChooseLocation = (props) => {
     const navigation = useNavigation()
 
     const [state, setState] = useState({
-        pickupCoords: {},
         dropLocationCoords: {}
     })
 
-    const { pickupCoords, dropLocationCoords } = state
+    const { dropLocationCoords } = state
     const checkValid = () => {
-        if (Object.keys(pickupCoords).length === 0) {
-            showError('Please enter your pickup location!')
-            return false;
-        }
+
         if (Object.keys(dropLocationCoords).length === 0) {
             showError('Please enter your drop location!')
             return false;
@@ -34,21 +30,10 @@ const ChooseLocation = (props) => {
         const isValid = checkValid()
         if (isValid) {
             props.route.params.getCoordinates({
-                pickupCoords,
                 dropLocationCoords
             })
             navigation.goBack()
         }
-    }
-
-    const fetchAddressCoords = (lat, lng) => {
-        setState({
-            ...state,
-            pickupCoords: {
-                latitude: lat,
-                longitude: lng
-            }
-        })
     }
 
     const fetchDestinationCoords = (lat, lng) => {
@@ -65,15 +50,11 @@ const ChooseLocation = (props) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView
+            <View
                 keyboardShouldPersistTaps="handled"
-                style={{ backgroundColor: 'white', flex: 1, padding: 24 }}
+                style={{ backgroundColor: 'white', flex: 1, padding: 24, paddingTop: 12 }}
             >
                 <View style={{ marginBottom: 16 }} />
-                <AddressPickup
-                    placheholderText="Enter Destination Location"
-                    fetchAddress={fetchAddressCoords}
-                />
                 <AddressPickup
                     placheholderText="Enter Destination Location"
                     fetchAddress={fetchDestinationCoords}
@@ -81,9 +62,9 @@ const ChooseLocation = (props) => {
                 <CustomBtn
                     btnText="Done"
                     onPress={onDone}
-                    btnStyle={{ marginTop: 24 }}
+                    btnStyle={{ marginTop: 8 }}
                 />
-            </ScrollView>
+            </View>
         </View>
     );
 };
