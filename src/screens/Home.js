@@ -32,11 +32,12 @@ export default function Home({ navigation }) {
                 longitudeDelta: LONGITUDE_DELTA
             }),
             time: 0,
-            distance: 0
+            distance: 0,
+            heading: 0
         }
     )
 
-    const { curLoc, time, distance, dropLocationCoords, isLoading, coordinate } = state
+    const { curLoc, time, distance, dropLocationCoords, isLoading, coordinate, heading } = state
     const updateState = (data) => setState((state) => ({ ...state, ...data }));
 
     const getLiveLocation = async () => {
@@ -128,8 +129,16 @@ export default function Home({ navigation }) {
                 >
                     <Marker.Animated
                         ref={markerRef}
-                        coordinate={coordinate}
-                        image={imagePath.icCurLoc} />
+                        coordinate={coordinate}>
+                        <Image source={imagePath.icBike}
+                            style={{
+                                width: 40,
+                                height: 40,
+                                //giving the right transform of user
+                                transform: [{ rotate: `${heading}deg` }]
+                            }}
+                            resizeMode='contain' />
+                    </Marker.Animated>
                     {Object.keys(dropLocationCoords).length > 0 && (
                         <Marker
                             coordinate={dropLocationCoords}
