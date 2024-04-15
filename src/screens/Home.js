@@ -114,8 +114,8 @@ export default function Home({ navigation }) {
         <View style={styles.container}>
             {distance !== 0 && time !== 0 &&
                 (<View style={{ alignItems: 'center', marginVertical: 16 }}>
-                    <Text>Time left: {time.toFixed(0)} </Text>
-                    <Text>Distance left: {distance.toFixed(0)}</Text>
+                    <Text>Time left: {time.toFixed(0)} min </Text>
+                    <Text>Distance left: {distance.toFixed(0)} km</Text>
                 </View>)}
             <View style={{ flex: 1 }}>
                 <MapView
